@@ -1,4 +1,8 @@
+# Executables (go build output)
 main
-*.log
 app
+newserver
+*.exe
+
 *.log
+IDEAS.md

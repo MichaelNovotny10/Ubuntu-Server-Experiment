@@ -7,6 +7,7 @@ import (
 
 func main() {
 	http.Handle("/changelog/", http.StripPrefix("/changelog/", http.FileServer(http.Dir("./changelog"))))
+	http.Handle("/projects/", http.StripPrefix("/projects/", http.FileServer(http.Dir("./projects"))))
 	http.Handle("/progress/", http.StripPrefix("/progress/", http.FileServer(http.Dir("./progress"))))
 	http.Handle("/", http.FileServer(http.Dir("./index")))
 
