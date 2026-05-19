@@ -1,77 +1,118 @@
 # Ubuntu Server Experiment
 
-> My personal home‑lab journey – running an Ubuntu server with a Go backend, Cloudflare Tunnel, and a simple static site for changelog and progress tracking.
+My personal home-lab journey: a Go HTTP server running on my Ubuntu Server laptop in my dorm room, exposed to the internet via Cloudflare Tunnel.
 
-🔗 **Live site:** [server.michaelnovotny.dev](https://server.michaelnovotny.dev)
-
----
-
-## 🚀 What’s inside
-
-- **Go web server** – serves static files for `/`, `/changelog`, `/progress`
-- **Ubuntu 22.04 / 24.04** – hosted on my local hardware
-- **Cloudflare Tunnel** – exposes the server without opening public IP ports
-- **Static HTML/CSS** – fully responsive, dark theme, mobile‑friendly
-- **Systemd service** – auto‑restarts the Go binary on failure
+**Live site:** [server.michaelnovotny.dev](https://server.michaelnovotny.dev)
 
 ---
 
-## 📁 Project structure
+## What's inside
+
+- **Go web server** — serves static files, battery status endpoint, graceful shutdown on SIGTERM
+- **systemd service** — keeps the server running, auto-restarts on failure
+- **Makefile** — build and deploy shortcuts
+
+---
+
+## Project structure
 
 ```
-
 .
-├── main.go                – entry point, HTTP handlers
-├── index/                 – root page (/, style.css, favicon)
-├── changelog/             – /changelog page
-├── progress/              – /progress page
-├── go.mod
-└── README.md
-
+├── app.go                  — HTTP server, routing, graceful shutdown
+├── deploy/
+│   └── newserver.service   — systemd unit file (lives at /etc/systemd/system/)
+├── Makefile                — build and deploy shortcuts
+├── index/                  — static files served at /
+├── changelog/              — static files served at /changelog
+├── progress/               — static files served at /progress
+├── projects/               — static files served at /projects
+├── battery/                — frontend for the /battery endpoint (live acpi status)
+└── go.mod
 ```
 
 ---
 
-## 🛠️ Local development
+## First time run
 
-1. **Clone the repo**
-   ```bash
-   git clone https://github.com/MichaelNovotny10/Ubuntu-Server-Experiment.git
-   cd Ubuntu-Server-Experiment
-   ```
+Requirements: [Go](https://go.dev/dl/) and `make` installed.
+Install Go:
+```bash
+sudo apt update && sudo apt install golang-go
+```
+Install make:
+```bash
+sudo apt update && sudo apt install make
+```
+Run it:
+```bash
+git clone https://github.com/MichaelNovotny10/Ubuntu-Server-Experiment.git
+cd Ubuntu-Server-Experiment
+make build
+./app
+```
 
-1. Run the server
-   ```bash
-   go run main.go
-   ```
-   Then open http://localhost:3000
-2. Build for production
-   ```bash
-   go build -o app
-   sudo systemctl restart newserver   # (if using the systemd service)
-   ```
+Then open http://localhost:3000 in your browser.
 
----
+If you don't want to install `make`:
 
-📝 Changelog & progress
-
-All notable changes and ongoing experiments are documented live at:
-
-· /changelog
-· /progress
-
----
-
-🔧 Future ideas
-
-· Having fun! (I have no idea what exactly to do right now)
+```bash
+go build -o app && ./app
+```
 
 ---
 
-📄 License
+## How to remove
 
-MIT – do whatever you want with this code.
+If you set it up as a systemd service, stop and clean that up first:
+
+```bash
+sudo systemctl stop newserver
+sudo systemctl disable newserver
+sudo rm /etc/systemd/system/newserver.service
+sudo systemctl daemon-reload
+```
+
+Then delete the project folder:
+
+```bash
+rm -rf /path/to/Ubuntu-Server-Experiment
+```
 
 ---
 
-Made with Love and Passion in my dorm room.
+## Local development
+
+```bash
+git clone https://github.com/MichaelNovotny10/Ubuntu-Server-Experiment.git
+cd Ubuntu-Server-Experiment
+go run app.go
+```
+
+Then open http://localhost:3000.
+
+---
+
+## Building and deploying
+
+```bash
+make deploy
+```
+
+This builds the binary and restarts the systemd service.
+
+To install or update the systemd unit:
+
+```bash
+sudo cp deploy/newserver.service /etc/systemd/system/newserver.service
+sudo systemctl daemon-reload
+```
+
+---
+
+## License
+
+MIT — do whatever you want with this code.
+
+---
+
+Made with love and passion in my dorm room.

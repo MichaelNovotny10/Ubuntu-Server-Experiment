@@ -9,3 +9,7 @@ body {
 a {
     color: lightblue;
 }
+
+p {
+    line-height: 0.5;
+}

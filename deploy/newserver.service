@@ -1,0 +1,14 @@
+[Unit]
+Description=New Go Web Server
+After=network.target cloudflared.service
+
+[Service]
+User=michael
+WorkingDirectory=/home/michael/newserver
+ExecStart=/home/michael/newserver/app
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target
